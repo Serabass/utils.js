@@ -65,7 +65,7 @@ export class Random {
     }
 }
 
-class Generate {
+export class Generate {
     static array(length, value = null) {
         var result = [];
 
@@ -88,7 +88,6 @@ class Generate {
 }
 
 export class Func {
-
     static get numbers() {
         return {
             increment: (val) => (x) => x + val,
@@ -114,8 +113,11 @@ export class Func {
             var oldVal = i;
             i += step;
             return oldVal;
-        }
-            ;
+        };
+    }
+
+    static decrement(from = 0, step = 1) {
+        return Func.increment(from, -step);
     }
 
     static sortBy(...fields) {
@@ -222,20 +224,41 @@ Array.prototype.random = function () {
 Array.prototype.countValues = function (cb = (el)=>el) {
     var result = {};
 
-    this.forEach((el) => {
-        el = cb(el);
-        if (typeof result[el] === 'undefined') {
+    for (var i = 0; i < this.length; i++) {
+        var x = this[i];
+        var el = cb(x);
+
+        if (result[el] === void 0) {
             result[el] = 1;
-        } else {
-            result[el]++;
+            continue;
         }
-    });
+
+        result[el]++;
+    }
+
+    return result;
+};
+
+Array.prototype.groupValues = function (cb = (el)=>el) {
+    var result = {};
+
+    for (var i = 0; i < this.length; i++) {
+        var x = this[i];
+        var el = cb(x);
+
+        if (result[el] === void 0) {
+            result[el] = [];
+            continue;
+        }
+
+        result[el].push(x);
+    }
 
     return result;
 };
 
 var x = Generate
-        .array(10)
+        .array(100, Func.random(0, 100, true))
     ;
 
-console.log(x);
+console.log(x.groupValues(x => x - (x % 10)));
