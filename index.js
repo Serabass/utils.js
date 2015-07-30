@@ -34,6 +34,10 @@ export class Timer {
 
 export class Async {
     static invoke(cb, ...args) {
+        if (process !== void 0 && process.nextTick !== void 0) {
+            process.nextTick(() => cb(...args));
+            return;
+        }
         Timer.timeout(0, () => cb(...args) );
     }
 
@@ -84,6 +88,29 @@ export class Generate {
         var result = [];
         from.to(to, (i) => result.push(i), step);
         return result;
+    }
+}
+
+export class Type {
+    static is(value, type) {
+
+        switch (typeof type) {
+            case 'string' :
+                return typeof value === type;
+
+            case 'function' :
+                return value instanceof type
+        }
+
+        throw 'Under construction';
+    }
+
+    static isRegExp(value) {
+        return Type.is(value, RegExp);
+    }
+
+    static isArray(value) {
+        return Type.is(value, Array);
     }
 }
 
